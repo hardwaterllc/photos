@@ -25,7 +25,7 @@ jobs:
           script: |
             set -e
             cd /var/www/lychee
-            git pull origin main
+            git pull origin master
             docker compose down
             docker compose up -d --build
             docker compose up -d --build && echo "✅ Deployment successful!"
