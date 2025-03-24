@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main  # or 'deploy', whatever you use
-
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
 jobs:
   deploy:
     name: 🚀 Deploy to SSH server
