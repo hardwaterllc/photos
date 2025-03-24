@@ -23,7 +23,9 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
+            set -e
             cd /var/www/lychee
             git pull origin main
             docker compose down
             docker compose up -d --build
+            docker compose up -d --build && echo "✅ Deployment successful!"
