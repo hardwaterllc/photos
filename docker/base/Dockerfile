@@ -57,8 +57,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # From ChatGPT to copy the files
 COPY . /var/www/Lychee
-=======
-COPY . /var/www/lychee
 
 COPY nginx.conf /etc/nginx/nginx.conf
 >>>>>>> 9bfe4d8f (yes)
