@@ -50,6 +50,9 @@ RUN \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# From ChatGPT to copy the files
+COPY . /var/www/html/Lychee
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
