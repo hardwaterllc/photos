@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main  # or 'deploy', whatever you use
-      - hw-brand
 
 jobs:
   deploy:
@@ -20,7 +19,7 @@ jobs:
         with:
           host: 128.199.2.241
           username: corobrie
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
             cd /var/www/lychee
