@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # or 'deploy', whatever you use
+      - hw-brand
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to SSH server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 128.199.2.241
+          username: corobrie
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/lychee
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
