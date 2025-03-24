@@ -1,31 +1,38 @@
-name: Deploy to Server
+name: Build and Deploy Lychee
 
 on:
   push:
     branches:
-      - main  # or 'deploy', whatever you use
-  # Allow manually triggering the workflow.
+      - master
   workflow_dispatch:
+
 jobs:
-  deploy:
-    name: 🚀 Deploy to SSH server
+  build:
+    name: 🛠 Build Lychee App
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          host: 128.199.2.241
-          username: corobrie
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
-          script: |
-            set -e
-            cd /var/www/lychee
-            git pull origin master
-            docker compose down
-            docker compose up -d --build
-            docker compose up -d --build && echo "✅ Deployment successful!"
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the app
+        run: npm run build
+
+      - name: Zip build output
+        run: |
+          cd public
+          zip -r build.zip dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-build
+          path: public/build.zip
