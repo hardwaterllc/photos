@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lychee-build
-          path: ./build
+          path: .
 
       - name: Copy build to server
         uses: appleboy/scp-action@v0.1.4
@@ -55,7 +55,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "./build/build.zip"
+          source: "./build.zip"
           target: "/var/www/lychee"
 
       - name: SSH and deploy
@@ -66,21 +66,21 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
-            echo "📦 Installing unzip if not available..."
+            echo "📦 Installing unzip if needed..."
             sudo apt-get update && sudo apt-get install -y unzip
 
-            echo "📁 Navigating to app folder..."
+            echo "📁 Moving to project directory..."
             cd /var/www/lychee
 
-            echo "🔍 Checking for build.zip..."
-            ls -lh /build/build.zip || echo "❌ build.zip not found!"
+            echo "📂 Listing contents before unzip:"
+            ls -lh
 
-            echo "📦 Unzipping build into public/"
-            unzip -o /build/build.zip -d public/
-            rm /build/build.zip
+            echo "🧨 Extracting build.zip into public/"
+            unzip -o build.zip -d public/
+            rm build.zip
 
-            echo "🔄 Restarting Docker containers..."
+            echo "🚀 Restarting Docker..."
             docker compose down
             docker compose up -d --build
 
-            echo "✅ Build deployed and app restarted!"
+            echo "✅ Deployment complete!"
