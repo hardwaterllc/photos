@@ -1,61 +1,37 @@
-FROM debian:bookworm-slim AS base
+FROM php:8.3-fpm
 
-# Set version label
-LABEL maintainer="lycheeorg"
-
-# Environment variables
-ENV PUID='1000'
-ENV PGID='1000'
-ENV USER='lychee'
-ENV PHP_TZ=UTC
-
-# Install base dependencies, add user and group, install php libraries
-RUN \
-    set -ev && \
-    apt-get update && \
-    apt-get upgrade -qy && \
-    apt-get install -qy --no-install-recommends\
-    ca-certificates \
+# Install system deps
+RUN apt-get update && apt-get install -y \
+    nginx \
+    git \
     curl \
-    apt-transport-https && \
-    curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
-    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list' && \
-    apt-get update && \
-    apt-get install -qy --no-install-recommends \
-    adduser \
-    nginx-light \
-    php8.4-mysql \
-    php8.4-pgsql \
-    php8.4-sqlite3 \
-    php8.4-imagick \
-    php8.4-mbstring \
-    php8.4-gd \
-    php8.4-xml \
-    php8.4-zip \
-    php8.4-fpm \
-    php8.4-redis \
-    php8.4-bcmath \
-    php8.4-intl \
-    libimage-exiftool-perl \
+    unzip \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
     ffmpeg \
     jpegoptim \
     optipng \
     pngquant \
     gifsicle \
     webp \
-    unzip && \
-    addgroup --gid "$PGID" "$USER" && \
-    adduser --gecos '' --no-create-home --disabled-password --uid "$PUID" --gid "$PGID" "$USER"
+    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# From ChatGPT to copy the files
-COPY . /var/www/Lychee
+WORKDIR /var/www/lychee
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY . /var/www/lychee
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+RUN composer install --no-dev --optimize-autoloader && \
+    php artisan config:clear && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
 
-CMD ["/start.sh"]
+CMD ["php-fpm"]
