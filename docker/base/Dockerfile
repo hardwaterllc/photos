@@ -1,11 +1,7 @@
 FROM debian:bookworm-slim AS base
 
 # Set version label
-<<<<<<< HEAD
 LABEL maintainer="lycheeorg"
-=======
-LABEL maintainer="Hardwater"
->>>>>>> 9bfe4d8f (yes)
 
 # Environment variables
 ENV PUID='1000'
@@ -52,14 +48,12 @@ RUN \
     addgroup --gid "$PGID" "$USER" && \
     adduser --gecos '' --no-create-home --disabled-password --uid "$PUID" --gid "$PGID" "$USER"
 
-<<<<<<< HEAD
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # From ChatGPT to copy the files
 COPY . /var/www/Lychee
 
 COPY nginx.conf /etc/nginx/nginx.conf
->>>>>>> 9bfe4d8f (yes)
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
