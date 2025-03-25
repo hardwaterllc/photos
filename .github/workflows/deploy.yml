@@ -36,8 +36,7 @@ jobs:
         with:
           name: lychee-build
           path: public/build.zip
-
-deploy:
+  deploy:
     name: 🚀 Deploy to Server
     runs-on: ubuntu-latest
     needs: build
