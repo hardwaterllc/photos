@@ -73,11 +73,11 @@ jobs:
             cd /var/www/lychee
 
             echo "🔍 Checking for build.zip..."
-            ls -lh build.zip || echo "❌ build.zip not found!"
+            ls -lh /build/build.zip || echo "❌ build.zip not found!"
 
             echo "📦 Unzipping build into public/"
-            unzip -o build.zip -d public/
-            rm build.zip
+            unzip -o /build/build.zip -d public/
+            rm /build/build.zip
 
             echo "🔄 Restarting Docker containers..."
             docker compose down
