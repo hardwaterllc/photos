@@ -29,13 +29,13 @@ jobs:
       - name: Zip build output
         run: |
           cd public
-          zip -r ../build.zip dist
+          zip -r build.zip dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: lychee-build
-          path: build.zip
+          path: public/build.zip
 
   deploy:
     name: 🚀 Deploy to Server
@@ -66,11 +66,16 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
+            echo "📦 Installing unzip if not available..."
+            sudo apt-get update && sudo apt-get install -y unzip
+
+            echo "📁 Navigating to app folder..."
             cd /var/www/lychee
-            echo "🔍 Verifying build.zip..."
-            ls -l build.zip || echo "❌ build.zip not found!"
-            
-            echo "📦 Unzipping build..."
+
+            echo "🔍 Checking for build.zip..."
+            ls -lh build.zip || echo "❌ build.zip not found!"
+
+            echo "📦 Unzipping build into public/"
             unzip -o build.zip -d public/
             rm build.zip
 
@@ -78,4 +83,4 @@ jobs:
             docker compose down
             docker compose up -d --build
 
-            echo "✅ Build deployed and containers restarted!"
+            echo "✅ Build deployed and app restarted!"
